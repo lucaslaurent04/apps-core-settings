@@ -149,7 +149,7 @@ export class PermissionsComponent implements OnInit {
     if (!this.newUser) this.newUser = 0;
     if (!this.newGroup) this.newGroup = 0;
     this.api.update('core\\Permission', [this.permission_id], { user_id: this.newUser, group_id: this.newGroup, class_name: this.className, rights: this.rights }, true);
-    this._location.back();
+    // this._location.back();
 
     // let snackBarRef = this.snackBar.open('Changes saved', 'Undo', {
     //   duration: 3000,

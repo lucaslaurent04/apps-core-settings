@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { ContextService, ApiService, AuthService, EnvService } from 'sb-shared-lib';
+import { AppStateService } from 'src/app/_services/AppStateService';
 
 import * as $ from 'jquery';
 import { type } from 'jquery';
@@ -26,7 +27,12 @@ export class AppRootComponent implements OnInit {
     public show_side_menu: boolean = false;
     public show_side_bar: boolean = true;
 
+    public show_search_side_menu: boolean = false;
+
     public filter: string;
+
+    private left_menu_id: string = 'settings.left';
+    private top_menu_id: string = 'settings.left';
 
     // original (full & translated) menu for left pane
     private leftMenu: any = {};
@@ -37,14 +43,16 @@ export class AppRootComponent implements OnInit {
     public translationsMenuLeft: any = {};
     public translationsMenuTop: any = {};
 
-    private app_settings_root_package: string = '';
+    public package: string = 'core';
+    public app: string = '';
 
     constructor(
         private router: Router,
-        private context:ContextService,
-        private api:ApiService,
-        private auth:AuthService,
-        private env:EnvService
+        private context: ContextService,
+        private api: ApiService,
+        private auth: AuthService,
+        private env: EnvService,
+        private params: AppStateService,
     ) {}
 
 
@@ -58,22 +66,53 @@ export class AppRootComponent implements OnInit {
             return;
         }
 
+        this.params.pathParam.subscribe( async (param:any) => {
+            if(param.hasOwnProperty('package') && param.hasOwnProperty('app')) {
+                this.package = param.package;
+                this.app = param.app;
+                try {
+                    const appinfo:any = await this.api.fetch('?get=appinfo&package='+this.package+'&app='+this.app);
+                    if(appinfo) {
+                        console.log(appinfo);
+                        if(appinfo.hasOwnProperty('params') && appinfo.params.hasOwnProperty('menus')) {
+                            if(appinfo.params.menus.hasOwnProperty('left')) {
+                                this.left_menu_id = appinfo.params.menus.left;
+                            }
+                            if(appinfo.params.menus.hasOwnProperty('top')) {
+                                this.top_menu_id = appinfo.params.menus.top;
+                            }
+                        }
+                    }
+                }
+                catch(response) {
+                    console.warn('appinfo not found', this.package, this.app, response);
+                }
+            }
+        });
+
         // load menus from server
         this.env.getEnv().then( async (environment:any) => {
-            this.app_settings_root_package = (environment.app_settings_root_package)?environment.app_settings_root_package:'core';
-            const data = await this.api.getMenu(this.app_settings_root_package, 'settings.left');
+            if(environment.app_settings_root_package && this.package == 'core') {
+                this.package = environment.app_settings_root_package;
+            }
+        });
+
+        setTimeout( async () => {
+            const data = await this.api.getMenu(this.package, this.left_menu_id);
+            this.show_search_side_menu = data.show_search;
             // store full translated menu
             this.leftMenu = this.translateMenu(data.items, data.translation);
             // fill left pane with unfiltered menu
             this.navMenuItems = this.leftMenu;
             // this.translationsMenuLeft = this.leftMenu.translation;
 
-            const top_menu:any = await this.api.getMenu(this.app_settings_root_package, 'settings.top');
+            const top_menu:any = await this.api.getMenu(this.package, this.top_menu_id);
             this.topMenuItems = top_menu.items;
             this.translationsMenuTop = top_menu.translation;
-        });
+        }, 1000);
 
     }
+
 
     private translateMenu(menu:any, translation: any) {
         let result: any[] = [];
@@ -178,8 +217,12 @@ export class AppRootComponent implements OnInit {
 
             if( item.context.hasOwnProperty('view') ) {
                 let parts = item.context.view.split('.');
-                if(parts.length) descriptor.context.type = <string>parts.shift();
-                if(parts.length) descriptor.context.name = <string>parts.shift();
+                if(parts.length) {
+                    descriptor.context.type = <string>parts.shift();
+                }
+                if(parts.length) {
+                    descriptor.context.name = <string>parts.shift();
+                }
             }
 
             if( item.context.hasOwnProperty('purpose') && item.context.purpose == 'create') {

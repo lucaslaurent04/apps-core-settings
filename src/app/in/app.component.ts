@@ -1,5 +1,7 @@
 import { Component, OnInit, NgZone  } from '@angular/core';
-import { ContextService } from 'sb-shared-lib';
+import { ActivatedRoute } from '@angular/router';
+import { ContextService, ApiService, AuthService, EnvService } from 'sb-shared-lib';
+import { AppStateService } from 'src/app/_services/AppStateService';
 
 @Component({
     selector: 'app',
@@ -9,10 +11,14 @@ import { ContextService } from 'sb-shared-lib';
 export class AppComponent implements OnInit  {
 
     public ready: boolean = false;
+    public package: string = '';
+    public app: string = '';
 
     constructor(
         private context: ContextService,
-        private zone: NgZone
+        private env: EnvService,
+        private route: ActivatedRoute,
+        private params: AppStateService
     ) {}
 
     private getDescriptor() {
@@ -25,6 +31,18 @@ export class AppComponent implements OnInit  {
         this.context.ready.subscribe( (ready:boolean) => {
             this.ready = ready;
         });
+
+        // extract package and app from URL and relay to the AppStateService
+        this.route.params.subscribe(async params => {
+                if(params.hasOwnProperty('package')) {
+                    this.package = params.package;
+                }
+                if(params.hasOwnProperty('app')) {
+                    this.app = params.app;
+                }
+                this.params.updateParamState({package: this.package, app: this.app});
+            });
+
     }
 
     public ngAfterViewInit() {

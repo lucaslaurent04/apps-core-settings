@@ -19,9 +19,9 @@ app-menu-list-item.hidden {
     margin: 0;
     background-color: #fff;
     border-bottom: 1px solid #c8ced3;
-    z-index: 1020;
+    z-index: 1;
     width: 100%;
-    flex: 0 0 55px;    
+    flex: 0 0 55px;
 }
 
 .app-body {
@@ -74,11 +74,11 @@ app-menu-list-item.hidden {
 
 .app-body .app-asidemenu {
     display: flex;
-    margin-top: 55px;    
+    margin-top: 55px;
     flex-direction: column;
     padding: 0;
 
-    background: rgba(0,0,0,0.04);    
+    background: rgba(0,0,0,0.04);
 
     margin-right: -250px;
     width: 250px;

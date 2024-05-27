@@ -1,0 +1,17 @@
+{
+    "name": "Settings",
+    "description": "Manage and configure global and App-specific options and parameters.",
+    "version": "1.0",
+    "authors": ["Cedric Francoys"],
+    "license": "LGPL-3",
+    "repository": "https://github.com/equalframework/apps-core-settings.git",
+    "url": "/settings",
+    "icon": "settings",
+    "color": "#FF5F00",
+    "access": {
+        "groups": [
+            "admins"
+        ]
+    },
+    "show_in_apps": true
+}

@@ -1,9 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
 @import '@angular/material/prebuilt-themes/indigo-pink.css';
 
+:root {
+  --rgb-white: 255, 255, 255;
+  --rgb-black: 0, 0, 0;
+}
+
+:root {
+  --color-ink: rgba(var(--rgb-black), 0.9);
+  --color-background: rgba(var(--rgb-white), 1);
+}
+
+:root[data-color-scheme="dark"] {
+  --color-ink: rgba(var(--rgb-white), 0.9);
+  --color-background: rgba(var(--rgb-black), 0.9);
+}
 
 body {
   overflow: hidden;
+  color: var(--color-ink);
+  background: var(--color-background);
 }
 
 #sb-container .sb-context {
@@ -27,7 +43,7 @@ body {
 
   .timepicker-dial__control {
     outline: none;
-  }  
+  }
 
   .clock-face__clock-hand {
     background-color: #3f51b5 !important;
