@@ -56,7 +56,22 @@ export class SettingsComponent implements OnInit {
             const data: any[] = await this.api.collect(
                     'core\\setting\\Setting',
                     ['package', '=', this.package],
-                    ['package', 'section_id.name', 'section_id.code', 'section_id.description', 'description', 'setting_values_ids.value', 'name', 'code', 'type', 'setting_choices_ids.value', 'title', 'help', 'form_control'],
+                    [
+                        'package',
+                        'section_id.name',
+                        'section_id.code',
+                        'section_id.description',
+                        'description',
+                        'setting_values_ids.value',
+                        'name',
+                        'code',
+                        'type',
+                        'object_class',
+                        'setting_choices_ids.value',
+                        'title',
+                        'help',
+                        'form_control'
+                    ],
                     'id', 'asc', 0, 100,
                     environment.locale
                 );
@@ -66,12 +81,32 @@ export class SettingsComponent implements OnInit {
             this.sectionsMap = {};
 
             // group elements by section
-            data.forEach(element => {
+            data.forEach(async (element) => {
                 if(!this.sectionsMap.hasOwnProperty(element.section_id.code)) {
                     this.sectionsMap[element.section_id.code] = [];
                     this.sections.push(element.section_id);
                 }
                 this.sectionsMap[element.section_id.code].push(element);
+
+                if(element.type === 'many2one' && element.form_control === 'select') {
+                    const selectionData = await this.api.collect(
+                        element.object_class,
+                        [],
+                        ['id', 'name'],
+                        'id', 'asc', 0, 100,
+                    );
+
+                    element.setting_choices_ids = [
+                        { id: null, name: 'None' },
+                        ...selectionData.map((item: any) => {
+                            return {
+                                ...item,
+                                value: item.id,
+                                name: item.name ?? ''
+                            };
+                        })
+                    ];
+                }
             });
         }
         catch(error) {

@@ -1,0 +1,22 @@
+<mat-card>
+  <div class="titleBox">
+    <mat-card-title>{{setting.title}}</mat-card-title>
+    <mat-card-subtitle>{{setting.help}}</mat-card-subtitle>
+    <div class="settingName">{{settingName}}</div>
+  </div>
+
+  <form (mouseenter)="focusState = true" (mouseleave)="focusState = false" (click)="mode = 'edit'">
+    <eq-m2o [entity]="setting.object_class"
+            [id]="settingValue"
+            [mode]="mode"
+            [nullable]="true"
+            [hint]="setting.description"
+            [appearance]="'outline'"
+            (itemSelected)="onChange($event)"
+            (canceled)="onCancel()"
+    >
+      {{setting.title}}
+    </eq-m2o>
+  </form>
+
+</mat-card>

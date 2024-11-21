@@ -13,7 +13,7 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppRootComponent } from './app.root.component';
 import { AppComponent } from './in/app.component';
 
-import { MatTableModule} from '@angular/material/table'
+import { MatTableModule} from '@angular/material/table';
 /* HTTP requests interception dependencies */
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 
@@ -23,6 +23,7 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS } from '@angular/material/snack-bar';
 import { SettingsComponent } from './in/settings/settings.component';
 import { WidgetToggleComponent } from './in/settings/sections/widget-toggle/widget-toggle.component';
 import { WidgetSelectComponent } from './in/settings/sections/widget-select/widget-select.component';
+import { WidgetSelectMany2oneComponent } from './in/settings/sections/widget-select-many2one/widget-select-many2one.component';
 import { WidgetInputComponent } from './in/settings/sections/widget-input/widget-input.component';
 import { PermissionsComponent } from './in/settings/permissions/permissions.component';
 import { PermissionRightsComponent } from './in/settings/permissions/component/permission-rights/permission-rights.component';
@@ -33,16 +34,17 @@ import { PermissionClassNameComponent } from './in/settings/permissions/componen
 registerLocaleData(localeFr);
 
 @NgModule({
-  declarations: [    
+  declarations: [
     AppRootComponent,
     AppComponent,
     SettingsComponent,
     WidgetToggleComponent,
     WidgetSelectComponent,
+    WidgetSelectMany2oneComponent,
     WidgetInputComponent,
     PermissionsComponent,
     PermissionRightsComponent,
-    PermissionClassNameComponent    
+    PermissionClassNameComponent
   ],
   imports: [
     AppRoutingModule,
@@ -57,7 +59,7 @@ registerLocaleData(localeFr);
   providers: [
     // add HTTP interceptor to inject AUTH header to any outgoing request
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true },
-    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 4000, horizontalPosition: 'start' } },    
+    { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 4000, horizontalPosition: 'start' } },
     { provide: MAT_DATE_LOCALE, useValue: 'fr-BE' },
     { provide: LOCALE_ID, useValue: 'fr-BE' },
     { provide: DateAdapter, useClass: CustomDateAdapter, deps: [MAT_DATE_LOCALE, Platform] }
